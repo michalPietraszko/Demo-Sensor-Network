@@ -1,0 +1,96 @@
+#pragma once
+
+#include <ISceneController.hpp>
+#include <SCENE_NAMEModel.hpp>
+#include <SCENE_NAMEView.hpp>
+
+#include <InputParser.hpp>
+#include <InputProcessor.hpp>
+#include <SceneChanger.hpp>
+#include <SceneLifetimeInfo.hpp>
+
+#include <InputResult.hpp>
+
+// ... FWD Declarations of scenes to transition to
+class SCENE_NAMEController : public ISceneController
+{
+    // clang-format off
+    using Model = SCENE_NAMEModel;
+    using View  = SCENE_NAMEView;
+
+    using SceneStates   = Model::SceneStates;
+    using TextConstants = View::TextConstants;
+
+    using SceneInputParser    = InputParser<SceneStates, SceneStates>;
+    using input_process_fn_t  = std::function<void(void)>;
+    using SceneInputProcessor = InputProcessor<input_process_fn_t>;
+    // clang-format on
+
+public:
+    SCENE_NAMEController(Model& model, View& view) : ISceneController(model, view) {}
+
+protected:
+    void onCreateImpl() override
+    {
+        ISceneController::onCreateImpl();
+        setInputCallbacks();
+    }
+
+    InputResult onProcessInputImpl() override
+    {
+        inputProcessor.processAllInput();
+        return getSceneLifetimeFromCurrentState();
+    }
+
+    void onDisplayImpl(Renderer& renderer) override
+    {
+        ISceneController::onDisplayImpl(renderer);
+        isNewestStateRendered = true;
+    }
+
+    void onTransition() override { lifetimeInfo.setSceneChangeFlag(); }
+
+    void onSceneUpdate() override { isNewestStateRendered = false; }
+
+    bool shouldRenderNextFrame() const override { return not isNewestStateRendered; }
+
+private:
+    void setInputCallbacks()
+    {
+        inputProcessor.add([this]() {
+            auto in = getView().m_IO.userInput.popInput();
+            if (not in) return;
+
+            onNewIOUserInput(*in);
+        });
+
+        //auto invalidInputCallback = [this]() {
+        //    auto& label = getView().m_IO.appStatus.get();
+        //    label.setTextCallback([]() { return " Invalid input!"; });
+        //    return getModel().m_CurrentSceneState;
+        //};
+
+        // ... other callbacks
+    }
+
+    void onNewIOUserInput(const UITextField& userInput)
+    {
+        // getModel().m_CurrentSceneState = inputParser.parse(getModel().m_CurrentSceneState, userInput.getText());
+        isNewestStateRendered = false;
+    }
+
+    InputResult getSceneLifetimeFromCurrentState()
+    {
+        // return lifetimeInfo.shouldChangeScene() ? InputResult::changeLayer : InputResult::none;
+    }
+
+    View& getView() { return dynamic_cast<View&>(m_View); }
+
+    Model& getModel() { return dynamic_cast<Model&>(m_Model); }
+
+    SceneInputProcessor inputProcessor{};
+    SceneLifetimeInfo lifetimeInfo{};
+    SceneInputParser inputParser{};
+
+    bool isNewestStateRendered{false};
+};

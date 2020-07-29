@@ -1,0 +1,42 @@
+#pragma once
+#include <ISceneView.hpp>
+#include <SCENE_NAMEModel.hpp>
+#include <MenuView.hpp>
+#include <UserIO.hpp>
+
+class SCENE_NAMEController;
+
+class SCENE_NAMEView : public ISceneView
+{
+    struct TextConstants
+    {
+        //...
+    };
+
+    friend class SCENE_NAMEController;
+    using SceneStates = SCENE_NAMEModel::SceneStates;
+    //using MainView = MenuView</*...*/>;
+
+    void setInvariants() override
+    {
+        //...
+    }
+
+    void displayAll(Renderer& renderer) override
+    {
+        view.display(renderer);
+        m_IO.appStatus.display(renderer);
+        m_IO.userInput.display(renderer);
+    }
+
+    void onLoad() override
+    {
+        //...
+    }
+
+// clang-format off
+    //MainView view = {/*...*/};
+
+    UserIO m_IO{};
+// clang-format on
+};

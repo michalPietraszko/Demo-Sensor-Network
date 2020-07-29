@@ -1,0 +1,14 @@
+[requires]
+boost/1.71.0@conan/stable
+imgui/1.73@bincrafters/stable
+glfw/3.2.1@bincrafters/stable
+glew/2.1.0@bincrafters/stable
+
+[generators]
+premake
+
+[imports]
+./misc/bindings, imgui_impl_glfw.cpp    -> ../../src/vendor/imgui
+./misc/bindings, imgui_impl_opengl3.cpp -> ../../src/vendor/imgui
+./misc/bindings, imgui_impl_glfw.h      -> ../../src/vendor/imgui
+./misc/bindings, imgui_impl_opengl3.h   -> ../../src/vendor/imgui

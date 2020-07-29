@@ -1,0 +1,13 @@
+#Directories
+.vs/
+build/
+bin/
+logs/
+
+#Files
+conan_imports*
+conan.lock
+conanbuild*
+conaninfo*
+graph_info*
+.DB_Store
