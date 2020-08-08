@@ -6,6 +6,7 @@
 #include <EventReceiver.hpp>
 #include <Logging.hpp>
 #include <MessageDispatcher.hpp>
+#include <MessageBuffer.hpp>
 #include <Runnable.hpp>
 #include <SensorMessageDispatcher.hpp>
 #include <SystemId.hpp>
@@ -14,6 +15,7 @@
 #include <common/message/MessageTypes.hpp>
 #include <common/message/definitions/ComponentModify.hpp>
 #include <common/message/definitions/SensorStatusReport.hpp>
+#include <SmartSharedMessage.hpp>
 
 namespace ipc = boost::interprocess;
 
@@ -23,7 +25,8 @@ class MainNode : public EventReceiver,
                  public Runnable
 {
 public:
-    MainNode(const SystemId& id) : EventReceiver(id) {}
+    MainNode(const SystemId& id, const unsigned bufferSize) 
+        : EventReceiver(id), msgBuffer{bufferSize} {}
 
     void run() override
     {
@@ -35,21 +38,23 @@ public:
     }
 
 protected:
-    virtual void onSensorStatusReportReceived(SensorStatusReport& statusReport) override
+    virtual void onSensorStatusReportReceived(SmartSharedMessage& msg) override
     {
+        auto statusReport = msg.get<SensorStatusReport>();
         if (not isEnabled)
         {
             LOG_ERR_ID(id, "SensorStatusReport before ComponentModify with Enable cause!");
             return;
         }
 
-        LOG_INF_ID(id, "Received SensorStatusReport, value: ", statusReport.report);
+        LOG_INF_ID(id, "Received SensorStatusReport, value: ", statusReport->report);
     }
 
-    virtual void onComponentModifyReceived(ComponentModify& componentModify) override
+    virtual void onComponentModifyReceived(SmartSharedMessage& msg) override
     {
-        LOG_INF_ID(id, "Received ComponentModify, cause: ", static_cast<unsigned>(componentModify.cause));
-        switch (componentModify.cause)
+        auto componentModify = msg.get<ComponentModify>();
+        LOG_INF_ID(id, "Received ComponentModify, cause: ", static_cast<unsigned>(componentModify->cause));
+        switch (componentModify->cause)
         {
             case ComponentModify::Cause::componentEnable:
                 onEnable();
@@ -66,13 +71,11 @@ private:
     void receiveNext()
     {
         auto event = EventReceiver::receive();
-        auto msg = EventFactory::get<Message>(event);
+        auto msg = SmartSharedMessage(event);
         handleMessage(msg);
-        /* temporary */
-        Environment::sharedMemory().free(msg);
     }
 
-    void handleMessage(Message* msg)
+    void handleMessage(SmartSharedMessage& msg)
     {
         const auto isHandled = 
             SensorMessageDispatcher::dispatch(msg) or ApplicationMessageDispatcher::dispatch(msg);
@@ -92,4 +95,5 @@ private:
     bool isEnabled{false};
     std::atomic<bool> shouldRun;
     const std::string id = std::string("Main Node");
+    MessageBuffer<SensorStatusReport> msgBuffer;
 };

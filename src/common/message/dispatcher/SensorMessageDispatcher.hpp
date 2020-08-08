@@ -4,17 +4,18 @@
 #include <SensorStatusReport.hpp>
 #include <Logging.hpp>
 #include <MessageDispatcher.hpp>
+#include <SmartSharedMessage.hpp>
 
 class SensorMessageDispatcher : public MessageDispatcher
 {
 public:
     virtual ~SensorMessageDispatcher() = default;
-    virtual bool dispatch(Message* msg) override
+    virtual bool dispatch(SmartSharedMessage& msg) override
     {
-        switch (msg->messageType)
+        switch (msg.get()->messageType)
         {
             case SensorStatusReport::staticType:
-                onSensorStatusReportReceived(*(static_cast<SensorStatusReport*>(msg)));
+                onSensorStatusReportReceived(msg);
                 return true;
             default:
                 return false;
@@ -22,7 +23,7 @@ public:
     }
 
 protected:
-    virtual void onSensorStatusReportReceived(SensorStatusReport& statusReport)
+    virtual void onSensorStatusReportReceived(SmartSharedMessage& msg)
     {
         LOG_ERR("Unhandled sensor status report!");
     }

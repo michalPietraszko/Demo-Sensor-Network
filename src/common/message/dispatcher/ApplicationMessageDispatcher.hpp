@@ -6,20 +6,21 @@
 
 #include <Logging.hpp>
 #include <MessageDispatcher.hpp>
+#include <SmartSharedMessage.hpp>
 
 class ApplicationMessageDispatcher : public MessageDispatcher
 {
 public:
     virtual ~ApplicationMessageDispatcher() = default;
-    virtual bool dispatch(Message* msg) override
+    virtual bool dispatch(SmartSharedMessage& smartMsg) override
     {
-        switch (msg->messageType)
+        switch (smartMsg.get()->messageType)
         {
             case ComponentModify::staticType:
-                onComponentModifyReceived(*(static_cast<ComponentModify*>(msg)));
+                onComponentModifyReceived(smartMsg);
                 return true;
             case SensorReportReq::staticType:
-                onSensorReportReq(*(static_cast<SensorReportReq*>(msg)));
+                onSensorReportReq(smartMsg);
                 return true;
             default:
                 return false;
@@ -27,12 +28,12 @@ public:
     }
 
 protected:
-    virtual void onComponentModifyReceived(ComponentModify& statusReport)
+    virtual void onComponentModifyReceived(SmartSharedMessage& msg)
     {
         LOG_ERR("Unhandled ComponentModify!");
     }
 
-    virtual void onSensorReportReq(SensorReportReq& statusReport)
+    virtual void onSensorReportReq(SmartSharedMessage& msg)
     {
         LOG_ERR("Unhandled SensorReportReq!");
     }

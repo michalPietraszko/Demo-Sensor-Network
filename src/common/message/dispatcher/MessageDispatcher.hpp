@@ -1,12 +1,12 @@
 #pragma once
-#include <Message.hpp>
 #include <Logging.hpp>
+#include <SmartSharedMessage.hpp>
 
 class MessageDispatcher
 {
 public:
     virtual ~MessageDispatcher() = default;
-    virtual bool dispatch(Message* msg) = 0;
+    virtual bool dispatch(SmartSharedMessage& msg) = 0;
 
-    static void onInvalidMessageReceived(Message* mgs) { LOG_ERR("Invalid message received!"); }
+    static void onInvalidMessageReceived(SmartSharedMessage& mgs) { LOG_ERR("Invalid message received!"); }
 };

@@ -6,4 +6,5 @@ enum class MessageType : unsigned
     SensorStatusReport,
     SensorReportReq,
     ComponentModify,
+    MainNodeReport,
 };

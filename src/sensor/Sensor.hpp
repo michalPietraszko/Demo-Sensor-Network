@@ -4,6 +4,7 @@
 #include <EventFactory.hpp>
 #include <EventReceiver.hpp>
 #include <EventSender.hpp>
+#include <SmartSharedMessage.hpp>
 #include <Runnable.hpp>
 #include <SystemId.hpp>
 #include <chrono>
@@ -43,10 +44,11 @@ public:
     }
 
 protected:
-    virtual void onComponentModifyReceived(ComponentModify& modify) override
+    virtual void onComponentModifyReceived(SmartSharedMessage& msg) override
     {
-        LOG_INF_ID(id, "Received ComponentModify, cause: ", static_cast<unsigned>(modify.cause));
-        switch (modify.cause)
+        auto modify = msg.get<ComponentModify>();
+        LOG_INF_ID(id, "Received ComponentModify, cause: ", static_cast<unsigned>(modify->cause));
+        switch (modify->cause)
         {
             case ComponentModify::Cause::componentEnable:
                 onEnable(); /* here a function that will try-receive and collect sensor data */
@@ -59,8 +61,9 @@ protected:
         }
     }
 
-    virtual void onSensorReportReq(SensorReportReq& statusReport) override
+    virtual void onSensorReportReq(SmartSharedMessage& msg) override
     {
+        auto statusReport = msg.get<SensorReportReq>();
         LOG_INF_ID(id, "Received SensorReportReq");
         if (not isEnabled)
         {
@@ -74,13 +77,11 @@ private:
     void receiveNext()
     {
         auto event = EventReceiver::receive();
-        auto msg = EventFactory::get<Message>(event);
+        auto msg = SmartSharedMessage(event);
         handleMessage(msg);
-        /* temporary */
-        Environment::sharedMemory().free(msg);
     }
 
-    void handleMessage(Message* msg)
+    void handleMessage(SmartSharedMessage& msg)
     {
         const auto isHandled = ApplicationMessageDispatcher::dispatch(msg);
         if(not isHandled) MessageDispatcher::onInvalidMessageReceived(msg);

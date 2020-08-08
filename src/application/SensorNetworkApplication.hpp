@@ -26,7 +26,7 @@ public:
     void setupMainNode(unsigned cyclicBufferSize)
     {
         const auto& mainNode = components.addMainNode(cyclicBufferSize);
-        ComponentSpawner::spawnRunnable<MainNode>(mainNode.id);
+        ComponentSpawner::spawnRunnable<MainNode>(mainNode.id, cyclicBufferSize);
     }
 
     void setupSensor(const std::string name, const unsigned interval, const unsigned startingValue)

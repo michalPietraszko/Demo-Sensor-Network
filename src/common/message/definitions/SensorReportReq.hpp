@@ -7,5 +7,5 @@ struct SensorReportReq : Message
 {
     constexpr static auto staticType = MessageType::SensorReportReq;
 
-    SensorReportReq() : Message{staticType} {}   
+    SensorReportReq() : Message{staticType} {}
 };
