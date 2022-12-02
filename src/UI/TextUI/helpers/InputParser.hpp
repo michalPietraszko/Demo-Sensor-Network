@@ -3,13 +3,12 @@
 #include <InputMatcher.hpp>
 #include <any>
 #include <functional>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 template <typename ID, typename ReturnT, typename FnArgT = const std::any&>
-class InputParser
-{
-// clang-format off
+class InputParser {
+    // clang-format off
     using return_t      = ReturnT;
     using callback_fn_t = std::function<return_t(FnArgT)>;
     using matcher_t     = InputMatcher;
@@ -32,49 +31,43 @@ class InputParser
 
     /* every ID has it's own set of matchers and callbacks to create tree like scenarios */
     using id_parse_infos_t = std::unordered_map<ID, ParseCallbackInfo>;
-// clang-format on
+    // clang-format on
 
 public:
     InputParser() = default;
 
-    return_t parse(ID id, std::any input)
-    {
+    return_t parse(ID id, std::any input) {
         /* get set of matchers and callbacks for current ID */
         auto& parseCallbackInfo = parseInfo.at(id);
 
         /* iterate over callbacks to match, at least one has to match */
-        for(auto& matchedCallback : parseCallbackInfo.callbacksToMatch)
-        {
-            /* each MatchedCallback can have many matchers if at least one matches then callback is called*/
-            for(auto& matcher : matchedCallback.matchers)
-            {
-                if(matcher.isMatch(input))
-                {
+        for (auto& matchedCallback : parseCallbackInfo.callbacksToMatch) {
+            /* each MatchedCallback can have many matchers if at least one matches then callback is called */
+            for (auto& matcher : matchedCallback.matchers) {
+                if (matcher.isMatch(input)) {
                     return matchedCallback.callback(matcher.getInputInMatchedForm());
                 }
             }
         }
 
         /* if no match was found for no callback at this ID then input is invalid */
-        return parseCallbackInfo.invalidInputCallback();        
+        return parseCallbackInfo.invalidInputCallback();
     }
 
-    void enable(ID id, invalid_input_callback_t invalidInputCallback)
-    {
+    void enable(ID id, invalid_input_callback_t invalidInputCallback) {
         auto res = parseInfo.insert({id, {{}, std::move(invalidInputCallback)}});
         assert(res.second);
     }
-   
-    void addCallback(ID id, std::initializer_list<matcher_t>&& matchers, callback_fn_t&& callback)
-    {
+
+    void addCallback(ID id, std::initializer_list<matcher_t>&& matchers, callback_fn_t&& callback) {
         auto& parseCallbackInfo = parseInfo.at(id);
         parseCallbackInfo.callbacksToMatch.push_back({{matchers}, std::move(callback)});
     }
 
-    void addCallback(std::initializer_list<ID> ids, std::initializer_list<matcher_t>&& matchers, callback_fn_t callback)
-    {
-        for(const auto& id : ids)
-        {
+    void addCallback(std::initializer_list<ID> ids,
+                     std::initializer_list<matcher_t>&& matchers,
+                     callback_fn_t callback) {
+        for (const auto& id : ids) {
             auto& parseCallbackInfo = parseInfo.at(id);
             parseCallbackInfo.callbacksToMatch.push_back({{matchers}, callback});
         }

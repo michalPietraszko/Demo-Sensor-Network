@@ -3,17 +3,17 @@
 
 /* MenuViewFormater */
 const std::vector<FormatGlyphs> MenuViewFormater::headline{FormatGlyphs::element,
-                                                              FormatGlyphs::newLine,
-                                                              FormatGlyphs::newLine};
+                                                           FormatGlyphs::newLine,
+                                                           FormatGlyphs::newLine};
 
 const std::vector<FormatGlyphs> MenuViewFormater::cellName{FormatGlyphs::nextInList,
-                                                              FormatGlyphs::element,
-                                                              FormatGlyphs::newLine};
+                                                           FormatGlyphs::element,
+                                                           FormatGlyphs::newLine};
 
 const std::vector<FormatGlyphs> MenuViewFormater::cellStatus{FormatGlyphs::tab,
-                                                                FormatGlyphs::element,
-                                                                FormatGlyphs::newLine,
-                                                                FormatGlyphs::newLine};
+                                                             FormatGlyphs::element,
+                                                             FormatGlyphs::newLine,
+                                                             FormatGlyphs::newLine};
 
 /* BasicFormater */
 const std::vector<FormatGlyphs> BasicFormater::any{FormatGlyphs::element, FormatGlyphs::newLine};

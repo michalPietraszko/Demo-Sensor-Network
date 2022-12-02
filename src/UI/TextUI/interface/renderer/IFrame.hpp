@@ -4,8 +4,7 @@
 #include <UIElements/UITextField.hpp>
 #include <UIElements/UITextInput.hpp>
 
-class IFrame
-{
+class IFrame {
 public:
     virtual ~IFrame() = default;
     virtual void setFormat(const std::vector<FormatGlyphs>& newFormat) = 0;

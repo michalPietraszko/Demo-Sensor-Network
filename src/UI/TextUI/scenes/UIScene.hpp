@@ -1,13 +1,12 @@
 #pragma once
-#include <UIAdapter.hpp>
-#include <Renderer.hpp>
-#include <utility>
 #include <InputResult.hpp>
+#include <Renderer.hpp>
+#include <UIAdapter.hpp>
+#include <utility>
 
 // class UIAdapter;
 
-class UIScene
-{
+class UIScene {
 public:
     virtual ~UIScene() = default;
 

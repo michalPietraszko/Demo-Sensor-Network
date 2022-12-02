@@ -1,20 +1,18 @@
 #pragma once
 #include <BasicFormater.hpp>
+#include <Renderer.hpp>
 #include <UITextField.hpp>
 #include <UITextInput.hpp>
 #include <optional>
-#include <Renderer.hpp>
-//debug
+// debug
 #include <string>
 
-class UserInputView
-{
+class UserInputView {
 public:
     UITextInput& get() { return userInputBuffer; }
 
-    std::optional<UITextField> popInput()
-    {
-        if(not hasUnconsumedUserInput()) return{};
+    std::optional<UITextField> popInput() {
+        if (not hasUnconsumedUserInput()) return {};
 
         UITextField userInput;
         userInput.setText(userInputBuffer.getBuffer().data());
@@ -24,21 +22,14 @@ public:
     }
 
     // debug
-    std::string getInput()
-    {
-        return std::string(userInputBuffer.getBuffer().data());
-    }
+    std::string getInput() { return std::string(userInputBuffer.getBuffer().data()); }
 
-    void display(Renderer& renderer)
-    {
-        renderer.submit(userInputBuffer, BasicFormater::any);
-    }
+    void display(Renderer& renderer) { renderer.submit(userInputBuffer, BasicFormater::any); }
 
 private:
     bool hasUnconsumedUserInput() { return userInputBuffer.getInputPendingFlag(); }
 
-    void reset()
-    {
+    void reset() {
         userInputBuffer = UITextInput();
         userInputBuffer.getInputPendingFlag() = false;
     }

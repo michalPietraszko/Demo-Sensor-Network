@@ -4,23 +4,19 @@
 #include <unordered_map>
 
 template <typename Input, typename Output>
-class SimpleConverter
-{
+class SimpleConverter {
 public:
     using Conversions = std::unordered_map<Input, Output>;
 
     SimpleConverter(const Output defaultOutput) : m_DefaultOutput{defaultOutput} {}
 
-    void add(Input&& input, Output&& output)
-    {
+    void add(Input&& input, Output&& output) {
         const auto res = conversions.insert({std::move(input), std::move(output)});
         assert(res.second);
     }
 
-    Output convert(const Input& input)
-    {
-        if (auto res = conversions.find(input); res != conversions.end())
-        {
+    Output convert(const Input& input) {
+        if (auto res = conversions.find(input); res != conversions.end()) {
             return res->second;
         }
         return m_DefaultOutput;
@@ -28,10 +24,7 @@ public:
 
     void setDefaultOutput(const Output defaultOutput) { m_DefaultOutput = defaultOutput; }
 
-    void clear()
-    {
-        conversions.clear();
-    }
+    void clear() { conversions.clear(); }
 
 private:
     Conversions conversions;

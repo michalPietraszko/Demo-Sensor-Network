@@ -3,17 +3,11 @@
 
 class MainNodeCreatorSceneController;
 
-class MainNodeCreatorSceneModel : public ISceneModel
-{
+class MainNodeCreatorSceneModel : public ISceneModel {
     friend class MainNodeCreatorSceneController;
+
 public:
-    enum class SceneStates
-    {
-        start,
-        invalid,
-        acceptSettings,
-        settingsAccepted
-    };
+    enum class SceneStates { start, invalid, acceptSettings, settingsAccepted };
 
     bool wasModelUpdated() override { return false; };
 

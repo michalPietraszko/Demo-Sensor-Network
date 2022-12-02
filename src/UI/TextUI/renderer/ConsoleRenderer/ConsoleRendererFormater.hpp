@@ -1,19 +1,16 @@
 #pragma once
+#include <FormatGlyphs.hpp>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <FormatGlyphs.hpp>
-#include <iostream>
 
-class ConsoleRendererFormater
-{
+class ConsoleRendererFormater {
 public:
     static void clear() { enumerator() = 0; }
 
-    static std::string convert(FormatGlyphs glyph)
-    {
-        switch (glyph)
-        {
+    static std::string convert(FormatGlyphs glyph) {
+        switch (glyph) {
             case FormatGlyphs::newLine:
                 return onNewLine();
             case FormatGlyphs::tab:
@@ -33,8 +30,7 @@ private:
     static std::string onTab() { return "\t"; }
     static std::string nextInList() { return std::to_string(++enumerator()) + ". "; }
 
-    static int& enumerator()
-    {
+    static int& enumerator() {
         static int i = 0;
         return i;
     }

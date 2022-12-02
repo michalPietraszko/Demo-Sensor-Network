@@ -1,40 +1,28 @@
 #pragma once
-#include <Event.hpp>
 #include <Environment.hpp>
+#include <Event.hpp>
+#include <EventFactory.hpp> // temporary
+#include <EventMessageQueue.hpp>
+#include <Message.hpp> // temporary
 #include <SystemId.hpp>
 #include <optional>
-#include <EventMessageQueue.hpp>
-#include <EventFactory.hpp> // temporary
-#include <Message.hpp> // temporary
 
-class EventReceiver
-{
+class EventReceiver {
 public:
     EventReceiver(const SystemId& id) : m_MessageQueue{Environment::queueManager().get(id)} {}
-    ~EventReceiver()
-    {
-        clearQueue();
-    }
+    ~EventReceiver() { clearQueue(); }
 
-    event_handle_t receive()
-    {
-        return m_MessageQueue->receive();
-    }
+    event_handle_t receive() { return m_MessageQueue->receive(); }
 
-    std::optional<event_handle_t> try_receive()
-    {
-        return m_MessageQueue->try_receive();
-    }
+    std::optional<event_handle_t> try_receive() { return m_MessageQueue->try_receive(); }
 
 protected:
     std::unique_ptr<EventMessageQueue> m_MessageQueue;
 
 private:
-    void clearQueue()
-    {   
+    void clearQueue() {
         auto event = try_receive();
-        while(event)
-        {
+        while (event) {
             // todo add fn to shared memory
             auto msg = EventFactory::get<Message>(*event);
             Environment::sharedMemory().free(msg);

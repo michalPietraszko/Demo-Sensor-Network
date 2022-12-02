@@ -1,26 +1,16 @@
 #pragma once
 #include <EventQueueManager.hpp>
+#include <LogService.hpp>
 #include <SharedMemory.hpp>
 #include <SpawnedManager.hpp>
-#include <LogService.hpp>
 
-class Environment
-{
+class Environment {
 public:
-    static EventQueueManager& queueManager()
-    {
-        return queueMgr;
-    }
+    static EventQueueManager& queueManager() { return queueMgr; }
 
-    static SharedMemory& sharedMemory()
-    {
-        return memory;
-    }
+    static SharedMemory& sharedMemory() { return memory; }
 
-    static SpawnedManager& spawnedManager()
-    {
-        return spawnedMgr;
-    }
+    static SpawnedManager& spawnedManager() { return spawnedMgr; }
 
 private:
     static LogService loggingService;

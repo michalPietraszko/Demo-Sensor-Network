@@ -3,20 +3,14 @@
 #include <functional>
 #include <vector>
 
-template<typename InputProcessFn>
-class InputProcessor
-{
+template <typename InputProcessFn>
+class InputProcessor {
 public:
-    void add(InputProcessFn fn)
-    {
-        inputsToProcess.push_back(fn);
-    }
+    void add(InputProcessFn fn) { inputsToProcess.push_back(fn); }
 
-    template<typename... Args>
-    void processAllInput(Args&&... args)
-    {
-        for(auto& inputProcessFn : inputsToProcess)
-        {
+    template <typename... Args>
+    void processAllInput(Args&&... args) {
+        for (auto& inputProcessFn : inputsToProcess) {
             inputProcessFn(args...);
         }
     }

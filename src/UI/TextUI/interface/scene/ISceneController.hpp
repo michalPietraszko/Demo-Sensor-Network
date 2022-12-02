@@ -5,8 +5,7 @@
 #include <InputResult.hpp>
 #include <SceneChanger.hpp>
 
-class ISceneController
-{
+class ISceneController {
 public:
     ISceneController(ISceneModel& model, ISceneView& view) : m_Model{model}, m_View{view} {}
     virtual ~ISceneController() = default;
@@ -27,27 +26,22 @@ protected:
 protected:
     virtual void onCreateImpl() { m_View.setInvariants(); }
 
-    virtual void onUpdateImpl(UIAdapter& adapter)
-    {
+    virtual void onUpdateImpl(UIAdapter& adapter) {
         m_Model.pullAppInfo(adapter);
 
-        if (m_Model.wasModelUpdated())
-        {
+        if (m_Model.wasModelUpdated()) {
             onSceneUpdate();
         }
     }
 
-    virtual void onLoadImpl(UIAdapter& adapter)
-    {
+    virtual void onLoadImpl(UIAdapter& adapter) {
         m_Model.pullAppInfo(adapter);
         onSceneUpdate();
         m_View.onLoad();
     }
 
-    virtual void onDisplayImpl(Renderer& renderer)
-    {
-        if (not renderer.usesOptimizedRendering() or shouldRenderNextFrame())
-        {
+    virtual void onDisplayImpl(Renderer& renderer) {
+        if (not renderer.usesOptimizedRendering() or shouldRenderNextFrame()) {
             renderer.newFrame();
             m_View.displayAll(renderer);
         }
@@ -57,8 +51,7 @@ protected:
     virtual InputResult onProcessInputImpl() { return InputResult::none; }
 
     template <typename T>
-    void setTransition()
-    {
+    void setTransition() {
         SceneChanger::setNext<T>();
         onTransition();
     }

@@ -1,8 +1,7 @@
 #pragma once
 #include <UITextField.hpp>
 
-struct UIStatusCell
-{
+struct UIStatusCell {
     UITextField description;
     UITextField status;
 };

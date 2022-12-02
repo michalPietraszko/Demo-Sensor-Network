@@ -3,8 +3,7 @@
 #include <Message.hpp>
 #include <MessageTypes.hpp>
 
-struct SensorReportReq : Message
-{
+struct SensorReportReq : Message {
     constexpr static auto staticType = MessageType::SensorReportReq;
 
     SensorReportReq() : Message{staticType} {}

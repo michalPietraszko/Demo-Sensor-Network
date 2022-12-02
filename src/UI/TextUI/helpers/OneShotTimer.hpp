@@ -2,21 +2,13 @@
 #include <future>
 #include <memory>
 
-class OneShotTimer
-{
+class OneShotTimer {
 public:
-    void alert()
-    {
-        prom->set_value();
-    }
+    void alert() { prom->set_value(); }
 
-    void wait()
-    {
-        fut->wait();
-    }
+    void wait() { fut->wait(); }
 
-    void reset()
-    {
+    void reset() {
         prom.reset(nullptr);
         fut.reset(nullptr);
         prom = std::make_unique<std::promise<void>>();

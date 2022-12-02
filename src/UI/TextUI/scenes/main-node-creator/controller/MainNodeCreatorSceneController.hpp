@@ -13,8 +13,7 @@
 #include <LazyInvoke.hpp>
 
 class MainMenuScene;
-class MainNodeCreatorSceneController : public ISceneController
-{
+class MainNodeCreatorSceneController : public ISceneController {
     // clang-format off
     using Model = MainNodeCreatorSceneModel;
     using View  = MainNodeCreatorSceneView;
@@ -33,26 +32,22 @@ public:
     MainNodeCreatorSceneController(Model& model, View& view) : ISceneController(model, view) {}
 
 protected:
-    void onCreateImpl() override
-    {
+    void onCreateImpl() override {
         ISceneController::onCreateImpl();
         setInputCallbacks();
     }
 
-    InputResult onProcessInputImpl() override
-    {
+    InputResult onProcessInputImpl() override {
         inputProcessor.processAllInput();
         return getSceneLifetimeFromCurrentState();
     }
 
-    void onLoadImpl(UIAdapter& adapter) override
-    {
+    void onLoadImpl(UIAdapter& adapter) override {
         ISceneController::onLoadImpl(adapter);
         adapterCache = &adapter;
     }
 
-    void onDisplayImpl(Renderer& renderer) override
-    {
+    void onDisplayImpl(Renderer& renderer) override {
         ISceneController::onDisplayImpl(renderer);
         isNewestStateRendered = true;
     }
@@ -64,8 +59,7 @@ protected:
     bool shouldRenderNextFrame() const override { return not isNewestStateRendered; }
 
 private:
-    void setInputCallbacks()
-    {
+    void setInputCallbacks() {
         inputProcessor.add([this]() {
             auto in = getView().m_IO.userInput.popInput();
             if (not in) return;
@@ -84,21 +78,20 @@ private:
 
         using Creator = InputMatcherCreator;
 
-        inputParser.addCallback(
-            SceneStates::start, {Creator::numberInRange(1, 10)}, [this](const auto& input) {
-                creatorProcedure.clear();
+        inputParser.addCallback(SceneStates::start, {Creator::numberInRange(1, 10)}, [this](const auto& input) {
+            creatorProcedure.clear();
 
-                auto& label = getView().m_IO.appStatus.get();
-                label.resetTextCallback();
-                label.setText(TextConstants::label_prompt_accept);
+            auto& label = getView().m_IO.appStatus.get();
+            label.resetTextCallback();
+            label.setText(TextConstants::label_prompt_accept);
 
-                const auto intInput = std::any_cast<int>(input);
-                auto& status = getView().view.menu.at(ViewElementId::setBufferSize).status;
-                status.setText(TextConstants::set_bsize_status + std::to_string(intInput));
+            const auto intInput = std::any_cast<int>(input);
+            auto& status = getView().view.menu.at(ViewElementId::setBufferSize).status;
+            status.setText(TextConstants::set_bsize_status + std::to_string(intInput));
 
-                creatorProcedure.addArgument(intInput);
-                return SceneStates::acceptSettings;
-            });
+            creatorProcedure.addArgument(intInput);
+            return SceneStates::acceptSettings;
+        });
 
         inputParser.addCallback(
             SceneStates::acceptSettings, {Creator::stringEqual("yes"), Creator::stringEqual("y")}, [this](const auto&) {
@@ -116,14 +109,12 @@ private:
             });
     }
 
-    void onNewIOUserInput(const UITextField& userInput)
-    {
+    void onNewIOUserInput(const UITextField& userInput) {
         getModel().m_CurrentSceneState = inputParser.parse(getModel().m_CurrentSceneState, userInput.getText());
         isNewestStateRendered = false;
     }
 
-    InputResult getSceneLifetimeFromCurrentState()
-    {
+    InputResult getSceneLifetimeFromCurrentState() {
         return lifetimeInfo.shouldChangeScene() ? InputResult::changeLayer : InputResult::none;
     }
 

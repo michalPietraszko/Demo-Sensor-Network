@@ -8,26 +8,22 @@
 #include <vector>
 
 template <typename Descriptor = std::string>
-class MenuView
-{
+class MenuView {
 public:
-    using MappedMenu      = UITableView<Descriptor, UIStatusCell>;
+    using MappedMenu = UITableView<Descriptor, UIStatusCell>;
     using MappedMenuEntry = typename MappedMenu::MappedCell;
 
     MenuView(UITextField headline, MappedMenu menu) : headline{std::move(headline)}, menu{std::move(menu)} {}
 
-    static MappedMenuEntry createMenuEntry(Descriptor descriptor, UIStatusCell content = {})
-    {
+    static MappedMenuEntry createMenuEntry(Descriptor descriptor, UIStatusCell content = {}) {
         return {descriptor, content};
     }
 
-    void display(Renderer& renderer)
-    {
+    void display(Renderer& renderer) {
         renderer.submit(headline, MenuViewFormater::headline);
-        for (auto& entry : menu)
-        {
+        for (auto& entry : menu) {
             renderer.submit(entry.second.description, MenuViewFormater::cellName);
-            renderer.submit(entry.second.status,      MenuViewFormater::cellStatus);
+            renderer.submit(entry.second.status, MenuViewFormater::cellStatus);
         }
     }
 

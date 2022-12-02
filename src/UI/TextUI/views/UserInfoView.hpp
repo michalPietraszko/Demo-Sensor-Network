@@ -1,20 +1,13 @@
 #pragma once
-#include <UITextField.hpp>
 #include <BasicFormater.hpp>
 #include <Renderer.hpp>
+#include <UITextField.hpp>
 
-class UserInfoView
-{
+class UserInfoView {
 public:
-    UITextField& get()
-    {
-        return userInfo;
-    }
+    UITextField& get() { return userInfo; }
 
-    void display(Renderer& renderer)
-    {
-        renderer.submit(userInfo, BasicFormater::any);
-    }
+    void display(Renderer& renderer) { renderer.submit(userInfo, BasicFormater::any); }
 
 private:
     UITextField userInfo;

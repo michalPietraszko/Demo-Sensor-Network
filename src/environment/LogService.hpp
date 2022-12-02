@@ -11,8 +11,7 @@ namespace fs = std::filesystem;
 
 class Logging;
 class Environment;
-class LogService
-{
+class LogService {
     friend class Logging;
     friend class Environment;
 
@@ -20,10 +19,9 @@ class LogService
     constexpr static auto logsDir = "./logs";
     constexpr static auto logsFile = "./logs/syslog.log";
 
-    LogService()
-    {
+    LogService() {
         fs::create_directories(logsDir);
-        
+
         /* initializeLogFile = */ []() {
             std::ofstream ofs;
             ofs.open(logsFile, std::ofstream::out | std::ofstream::trunc);
@@ -36,8 +34,7 @@ class LogService
     ~LogService() { ipc::named_mutex::remove(mutexName); }
 
 private:
-    static void log(const char* str)
-    {
+    static void log(const char* str) {
         ipc::named_mutex mutex(ipc::open_or_create, mutexName);
         ipc::scoped_lock<ipc::named_mutex> lock(mutex);
 

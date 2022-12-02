@@ -12,39 +12,29 @@
 #include <string>
 #include <vector>
 
-class ConsoleRenderer : public IRenderingMethod
-{
-    class Frame : public IFrame
-    {
+class ConsoleRenderer : public IRenderingMethod {
+    class Frame: public IFrame {
     public:
         void setFormat(const std::vector<FormatGlyphs>& newFormat) override { currentFormat = &newFormat; }
         void add(const UITextField& elem) override { addOutput(elem.getText()); }
         void add(UITextInput& elem) override { addInput(elem); }
 
-        void clearInputBuffer()
-        {
-            input.reset(nullptr);
-        }
+        void clearInputBuffer() { input.reset(nullptr); }
 
-        void clearOutputBuffer()
-        {
+        void clearOutputBuffer() {
             ss.str(std::string(""));
             ConsoleRendererFormater::clear();
         }
 
         std::string getOutput() { return ss.str(); }
-        void promptInput()
-        {
+        void promptInput() {
             if (input) input->update();
         }
 
     private:
-        void addOutput(std::string str)
-        {
-            for (auto& glyph : *currentFormat)
-            {
-                if (glyph == FormatGlyphs::element)
-                {
+        void addOutput(std::string str) {
+            for (auto& glyph : *currentFormat) {
+                if (glyph == FormatGlyphs::element) {
                     ss << str;
                     continue;
                 }
@@ -57,8 +47,7 @@ class ConsoleRenderer : public IRenderingMethod
          *   every time 'update' is called injected TextInput will be
          *   updated
          **/
-        void addInput(UITextInput& elem)
-        {
+        void addInput(UITextInput& elem) {
             input.reset(nullptr);
             input = std::make_unique<ConsoleInputReader>(elem);
         }
@@ -69,14 +58,12 @@ class ConsoleRenderer : public IRenderingMethod
     };
 
 public:
-    void beginFrame() override
-    {
+    void beginFrame() override {
         clearScreen();
         m_Frame.clearInputBuffer();
     }
 
-    void submitFrame() override
-    {
+    void submitFrame() override {
         displayOutput();
         displayInput();
         m_Frame.clearOutputBuffer();
@@ -89,10 +76,7 @@ public:
 private:
     void clearScreen() const { system("clear"); }
 
-    void displayOutput()
-    {
-        std::cout << m_Frame.getOutput() << std::flush;
-    }
+    void displayOutput() { std::cout << m_Frame.getOutput() << std::flush; }
 
     void displayInput() { m_Frame.promptInput(); }
 

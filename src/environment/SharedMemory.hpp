@@ -2,6 +2,8 @@
 #include <LifetimeLogger.hpp>
 #include <Logging.hpp>
 #include <MultiProcessGuard.hpp>
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/containers/string.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <iostream>
 #include <string>
@@ -9,88 +11,86 @@
 
 namespace ipc = boost::interprocess;
 
-class SharedMemory : LifetimeLogger
-{
+class SharedMemory: LifetimeLogger {
+    using CharAllocator = ipc::allocator<char, ipc::managed_shared_memory::segment_manager>;
+    using String        = ipc::basic_string<char, std::char_traits<char>, CharAllocator>;
+
 public:
-    using SizeInBytes = unsigned;
     using AllocatedMemoryPtr = void*;
-    using Handle = ipc::managed_shared_memory::handle_t;
+    using SizeInBytes        = unsigned;
+    using Handle             = ipc::managed_shared_memory::handle_t;
+
+    String string(const std::string& str) { return {str.c_str(), charAllocator}; }
 
 public:
     SharedMemory(const SizeInBytes size, std::string name = "SharedMemory1")
         : LifetimeLogger("SharedMemory, size: " + std::to_string(size))
         , sharedMemObjName{std::move(name)}
         , segment(ipc::open_or_create, sharedMemObjName.c_str(), size)
-        , initFreeMemory{segment.get_free_memory()}
-    {
+        , initFreeMemory{segment.get_free_memory()} {
         LOG_INF("Free mem: ", segment.get_free_memory());
+        CharAllocator charallocator(segment.get_segment_manager());
     }
 
-    ~SharedMemory()
-    {
-        if (guard.isCreatorProcess()) removeSegment();
+    ~SharedMemory() {
+        if (guard.isCreatorProcess()) 
+            removeSegment();
     }
 
 public:
     template <typename T, typename... Args>
-    T* allocate(const char* name, Args... args)
-    {
+    T* allocate(const char* name, Args... args) {
         return segment.construct<T>(name)(std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
-    T* allocate_or_find(const char* name, Args... args)
-    {
+    T* allocate_or_find(const char* name, Args... args) {
         return segment.find_or_construct<T>(name)(std::forward<Args>(args)...);
     }
 
     template <typename T>
-    decltype(auto) find(const char* name)
-    {
+    decltype(auto) find(const char* name) {
         return segment.find<T>(name);
     }
 
     template <typename T, typename... Args>
-    T* allocate(Args... args)
-    {
+    T* allocate(Args... args) {
         return segment.construct<T>(ipc::anonymous_instance)(std::forward<Args>(args)...);
     }
 
     template <typename T>
-    Handle handle_from_ptr(T* ptr)
-    {
+    Handle handle_from_ptr(T* ptr) {
         auto vPtr = reinterpret_cast<void*>(ptr);
         return segment.get_handle_from_address(vPtr);
     }
 
     template <typename T>
-    T* ptr_from_handle(Handle handle)
-    {
+    T* ptr_from_handle(Handle handle) {
         return reinterpret_cast<T*>(segment.get_address_from_handle(handle));
     }
 
     template <typename T>
-    void free(T* ptr)
-    {
+    void free(T* ptr) {
         segment.destroy_ptr(ptr);
     }
 
 private:
-    void removeSegment()
-    {
+    void removeSegment() {
         logIfMemoryLeak();
         LOG_INF("Removing memory, name: ", sharedMemObjName);
         ipc::shared_memory_object::remove(sharedMemObjName.c_str());
     }
 
-    void logIfMemoryLeak() const
-    {
+    void logIfMemoryLeak() const {
         if (initFreeMemory != segment.get_free_memory())
-            LOG_ERR("Shared memory leak! Initial: ", initFreeMemory, ", Current:", segment.get_free_memory());
+            LOG_ERR("Shared memory leak! Initial: ", initFreeMemory, 
+                                                  ", Current:", 
+                                                  segment.get_free_memory());
     }
 
     const std::string sharedMemObjName;
     ipc::managed_shared_memory segment;
     const ipc::managed_shared_memory::size_type initFreeMemory;
     MultiProcessGuard guard{};
+    CharAllocator charAllocator{segment.get_segment_manager()};
 };

@@ -1,11 +1,10 @@
 #pragma once
 #include <Renderer.hpp>
 
-class ISceneView
-{
+class ISceneView {
 public:
     virtual ~ISceneView() = default;
-    virtual void displayAll(Renderer&) {};
-    virtual void onLoad() {};
-    virtual void setInvariants(){}
+    virtual void displayAll(Renderer&){};
+    virtual void onLoad(){};
+    virtual void setInvariants() {}
 };

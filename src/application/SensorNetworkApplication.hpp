@@ -1,4 +1,5 @@
 #pragma once
+#include <AppLifetimeInfo.hpp>
 #include <ComponentSpawner.hpp>
 #include <Environment.hpp>
 #include <LoopTimingController.hpp>
@@ -12,25 +13,21 @@
 #include <main-node/MainNode.hpp>
 #include <sensor/Sensor.hpp>
 #include <thread>
-#include <AppLifetimeInfo.hpp>
 
-class SensorNetworkApplication
-{
+class SensorNetworkApplication {
 public:
     unsigned getSensorInfo() const { return components.getNumOfSensors(); }
     bool isMainNodeCreated() const { return components.isMainNodeCreated(); }
-    bool isAllSystemSetup()  const { return components.isAllSystemSetup(); }
-    bool isSystemRunning()   const { return appInfo.isSensorNetworkSimulationRunning; }
+    bool isAllSystemSetup() const { return components.isAllSystemSetup(); }
+    bool isSystemRunning() const { return appInfo.isSensorNetworkSimulationRunning; }
 
 public:
-    void setupMainNode(unsigned cyclicBufferSize)
-    {
+    void setupMainNode(unsigned cyclicBufferSize) {
         const auto& mainNode = components.addMainNode(cyclicBufferSize);
         ComponentSpawner::spawnRunnable<MainNode>(mainNode.id, cyclicBufferSize);
     }
 
-    void setupSensor(const std::string name, const unsigned interval, const unsigned startingValue)
-    {
+    void setupSensor(const std::string name, const unsigned interval, const unsigned startingValue) {
         const auto& sensor = components.addSensor(name, interval, startingValue);
         ComponentSpawner::spawnRunnable<Sensor>(sensor.id, components.getMainNode().id, startingValue);
 
@@ -42,25 +39,25 @@ public:
 
     void setupObserver() {}
 
-    void startSystem()
-    {
+    void startSystem() {
         timerService.start();
         systemBroadcaster.broadcastStart();
         appInfo.isSensorNetworkSimulationRunning = true;
     }
 
-    void stopSystem()
-    {
+    void stopSystem() {
         timerService.stop();
-        systemBroadcaster.boradcastStop();
         appInfo.isAppRunning = false;
+        if (not appInfo.isSensorNetworkSimulationRunning) {
+            return;
+        }
+
+        systemBroadcaster.boradcastStop();
         appInfo.isSensorNetworkSimulationRunning = false;
     }
 
-    void run()
-    {
-        while (appInfo.isAppRunning)
-        {
+    void run() {
+        while (appInfo.isAppRunning) {
             LoopTimingController ctr{};
             timerService.update();
             ui->processUserInput();
@@ -72,20 +69,17 @@ public:
 
     void addUI(std::unique_ptr<UI>&& newUi) { ui = std::move(newUi); }
 
-    UIAdapter& getUIAdapter()
-    {
+    UIAdapter& getUIAdapter() {
         static UIAdapter uiAdapter(*this);
         return uiAdapter;
     }
 
 private:
-    Timer& addPeriodic(const unsigned period, TimerService::on_timeout_fn_t&& fn)
-    {
+    Timer& addPeriodic(const unsigned period, TimerService::on_timeout_fn_t&& fn) {
         return timerService.add(Timer::timeout_ms_t{period}, Timer::TimerType::periodic, std::move(fn));
     }
 
-    void startSensorIfSystemRunning(const SystemId& id, Timer& reportTimer)
-    {
+    void startSensorIfSystemRunning(const SystemId& id, Timer& reportTimer) {
         if (not appInfo.isSensorNetworkSimulationRunning) return;
         systemBroadcaster.sendStart(id);
         reportTimer.start();

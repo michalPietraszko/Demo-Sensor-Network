@@ -1,7 +1,6 @@
 #pragma once
 
-class Runnable
-{
+class Runnable {
 public:
     virtual ~Runnable() = default;
     virtual void run() = 0;

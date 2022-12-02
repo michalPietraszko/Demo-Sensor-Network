@@ -2,8 +2,7 @@
 #include <UserInfoView.hpp>
 #include <UserInputView.hpp>
 
-struct UserIO
-{
+struct UserIO {
     UserInfoView appStatus{};
     UserInputView userInput{};
 };

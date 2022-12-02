@@ -2,8 +2,7 @@
 
 #include <unistd.h>
 
-class MultiProcessGuard
-{
+class MultiProcessGuard {
 public:
     MultiProcessGuard() : m_ThisProcessId{getpid()} {}
     virtual ~MultiProcessGuard() {}

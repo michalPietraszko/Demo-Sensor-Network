@@ -1,0 +1,15 @@
+1. If Strings are to be sent between entities it needs to be using boost::interprocess::string 
+2. Passing ID-s needs to be verified (const& to temporaries)
+3. Maybe Id-s should be unique (not copyable nor movalbe) - seems okay
+4. But then how to pass them? 
+
+
+event :
+    int i -> okay
+    ipc::string -> okay
+    event -> okay
+    ipc::string& -> nok
+
+// maybe SystemId-s should be events?
+
+Message will have event 

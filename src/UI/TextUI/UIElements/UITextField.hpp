@@ -1,8 +1,7 @@
 #pragma once
 #include <TextCallback.hpp>
 
-class UITextField : public TextCallback
-{
+class UITextField : public TextCallback {
 public:
     UITextField() = default;
     UITextField(std::string str) : text(std::move(str)) {}

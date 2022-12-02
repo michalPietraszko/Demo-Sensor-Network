@@ -2,8 +2,7 @@
 #include <TextUI/TextUI.hpp>
 #include <memory>
 
-int main()
-{
+int main() {
     auto app    = std::make_unique<SensorNetworkApplication>();
     auto textUI = std::make_unique<TextUI>(app->getUIAdapter());
     app->addUI(std::move(textUI));

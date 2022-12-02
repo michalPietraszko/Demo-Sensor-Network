@@ -13,8 +13,7 @@
 #include <LazyInvoke.hpp>
 
 class MainMenuScene;
-class SensorCreatorSceneController : public ISceneController
-{
+class SensorCreatorSceneController : public ISceneController {
     // clang-format off
     using Model = SensorCreatorSceneModel;
     using View  = SensorCreatorSceneView;
@@ -33,27 +32,23 @@ public:
     SensorCreatorSceneController(Model& model, View& view) : ISceneController(model, view) {}
 
 protected:
-    void onCreateImpl() override
-    {
+    void onCreateImpl() override {
         ISceneController::onCreateImpl();
         setInputCallbacks();
         setSensorName();
     }
 
-    InputResult onProcessInputImpl() override
-    {
+    InputResult onProcessInputImpl() override {
         inputProcessor.processAllInput();
         return getSceneLifetimeFromCurrentState();
     }
 
-    void onLoadImpl(UIAdapter& adapter) override
-    {
+    void onLoadImpl(UIAdapter& adapter) override {
         ISceneController::onLoadImpl(adapter);
         adapterCache = &adapter;
     }
 
-    void onDisplayImpl(Renderer& renderer) override
-    {
+    void onDisplayImpl(Renderer& renderer) override {
         ISceneController::onDisplayImpl(renderer);
         isNewestStateRendered = true;
     }
@@ -65,8 +60,7 @@ protected:
     bool shouldRenderNextFrame() const override { return not isNewestStateRendered; }
 
 private:
-    void setInputCallbacks()
-    {
+    void setInputCallbacks() {
         inputProcessor.add([this]() {
             auto in = getView().m_IO.userInput.popInput();
             if (not in) return;
@@ -113,27 +107,23 @@ private:
             });
     }
 
-    void setSensorName()
-    {
+    void setSensorName() {
         getMenuCell(ViewElementId::sensorName).status.setText(TextConstants::sensorName);
         getMenuCell(ViewElementId::sensorName).status.setTextCallback([this]() {
             return std::to_string(getModel().m_CachedAppState.numOfSensors);
         });
     }
 
-    void onNewIOUserInput(const UITextField& userInput)
-    {
+    void onNewIOUserInput(const UITextField& userInput) {
         getModel().m_CurrentSceneState = inputParser.parse(getModel().m_CurrentSceneState, userInput.getText());
         isNewestStateRendered = false;
     }
 
-    void updateLabel(const SceneStates newState)
-    {
+    void updateLabel(const SceneStates newState) {
         auto& label = getView().m_IO.appStatus.get();
         label.resetTextCallback();
 
-        switch (newState)
-        {
+        switch (newState) {
             case SceneStates::setStartingValue:
                 label.setText(TextConstants::labelStartingVal);
                 break;
@@ -146,8 +136,7 @@ private:
         }
     }
 
-    void onSetStartingValueTransition(const std::any& input)
-    {
+    void onSetStartingValueTransition(const std::any& input) {
         updateLabel(SceneStates::setStartingValue);
         creatorProcedure.clear();
 
@@ -164,8 +153,7 @@ private:
         creatorProcedure.addArgument(intInput);
     }
 
-    void onAcceptSettingsTransition(const std::any& input)
-    {
+    void onAcceptSettingsTransition(const std::any& input) {
         updateLabel(SceneStates::acceptSettings);
 
         const auto intInput = std::any_cast<int>(input);
@@ -177,8 +165,7 @@ private:
 
     UIStatusCell& getMenuCell(const ViewElementId& id) { return getView().view.menu.at(id); }
 
-    InputResult getSceneLifetimeFromCurrentState()
-    {
+    InputResult getSceneLifetimeFromCurrentState() {
         return lifetimeInfo.shouldChangeScene() ? InputResult::changeLayer : InputResult::none;
     }
 

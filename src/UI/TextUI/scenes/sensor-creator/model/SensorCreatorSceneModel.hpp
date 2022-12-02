@@ -3,27 +3,18 @@
 
 class SensorCreatorSceneController;
 
-class SensorCreatorSceneModel : public ISceneModel
-{
+class SensorCreatorSceneModel : public ISceneModel {
     friend class SensorCreatorSceneController;
+
 public:
-    enum class SceneStates
-    {
-        start,
-        setStartingValue,
-        acceptSettings,
-        settingsAccepted
-    };
+    enum class SceneStates { start, setStartingValue, acceptSettings, settingsAccepted };
+
 private:
-    struct CachedState
-    {
+    struct CachedState {
         unsigned numOfSensors{};
     };
 
-    void pullAppInfo(UIAdapter& adapter) override
-    {
-        m_CachedAppState.numOfSensors = adapter.getSensorInfo();
-    }
+    void pullAppInfo(UIAdapter& adapter) override { m_CachedAppState.numOfSensors = adapter.getSensorInfo(); }
 
     bool wasModelUpdated() override { return false; };
 

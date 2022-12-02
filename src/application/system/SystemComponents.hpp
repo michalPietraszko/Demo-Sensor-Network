@@ -7,17 +7,13 @@
 #include <string>
 #include <vector>
 
-class SystemComponents
-{
+class SystemComponents {
     using id_type_t = SystemId;
     using queue_t = std::unique_ptr<EventMessageQueue>;
 
-    struct Sensor
-    {
+    struct Sensor {
         Sensor(id_type_t id, queue_t&& q, unsigned period, unsigned val)
-            : id{id}, queue{std::move(q)}, reportingPeriod{period}, startingValue{val}
-        {
-        }
+            : id{id}, queue{std::move(q)}, reportingPeriod{period}, startingValue{val} {}
 
         const id_type_t id;
         queue_t queue;
@@ -27,8 +23,7 @@ class SystemComponents
 
     using Sensors = std::vector<Sensor>;
 
-    struct MainNode
-    {
+    struct MainNode {
         constexpr static auto name = "main-node";
         MainNode(id_type_t id, queue_t&& q, unsigned bsize) : id{id}, queue{std::move(q)}, reportingBufferSize{bsize} {}
 
@@ -39,8 +34,7 @@ class SystemComponents
 
 public:
     template <typename... Args>
-    Sensor& addSensor(const std::string& name, Args&&... args)
-    {
+    Sensor& addSensor(const std::string& name, Args&&... args) {
         const auto id = SystemIdPool::getNext(name);
         auto queue = Environment::queueManager().add(id);
         sensors.emplace_back(id, std::move(queue), args...);
@@ -49,8 +43,7 @@ public:
     }
 
     template <typename... Args>
-    MainNode& addMainNode(Args&&... args)
-    {
+    MainNode& addMainNode(Args&&... args) {
         assert(not mainNode);
         const auto id = SystemIdPool::getNext(MainNode::name);
         auto queue = Environment::queueManager().add(id);
@@ -58,8 +51,7 @@ public:
         return *mainNode;
     }
 
-    MainNode& getMainNode()
-    {
+    MainNode& getMainNode() {
         assert(mainNode);
         return *mainNode;
     }
@@ -70,13 +62,9 @@ public:
 
     bool isMainNodeCreated() const { return mainNode != nullptr; }
 
-    bool isAllSystemSetup() const 
-    {
-        return isMainNodeCreated() and getNumOfSensors();
-    }
+    bool isAllSystemSetup() const { return isMainNodeCreated() and getNumOfSensors(); }
 
-    Sensor& findSensorById(const SystemId& id)
-    {
+    Sensor& findSensorById(const SystemId& id) {
         const auto res = findSensor([&id](auto& sensor) { return sensor.id.toString() == id.toString(); });
         assert(res != sensors.end());
         return *res;
@@ -84,8 +72,7 @@ public:
 
 private:
     template <typename FindFn>
-    Sensors::iterator findSensor(FindFn fn)
-    {
+    Sensors::iterator findSensor(FindFn fn) {
         return std::find_if(sensors.begin(), sensors.end(), fn);
     }
 

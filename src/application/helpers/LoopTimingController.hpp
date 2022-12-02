@@ -1,29 +1,23 @@
 #pragma once
+#include <Config.hpp>
 #include <chrono>
 #include <iostream>
 #include <thread>
-#include <Config.hpp>
 
-class LoopTimingController
-{
+class LoopTimingController {
     using high_resolution_clock = std::chrono::high_resolution_clock;
     using time_point_t = std::chrono::time_point<high_resolution_clock>;
     using milliseconds = std::chrono::milliseconds;
 
 public:
-    ~LoopTimingController()
-    {
-        waitUntilRefreshPeriod();
-    }
+    ~LoopTimingController() { waitUntilRefreshPeriod(); }
 
 private:
-    void waitUntilRefreshPeriod()
-    {
+    void waitUntilRefreshPeriod() {
         const auto end = high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeElapsed = end - m_Start;
 
-        if (m_LoopRefreshPeriod > timeElapsed)
-        {
+        if (m_LoopRefreshPeriod > timeElapsed) {
             const auto waitTime = m_LoopRefreshPeriod - timeElapsed;
             std::this_thread::sleep_for(waitTime);
         }

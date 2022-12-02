@@ -2,8 +2,7 @@
 
 #include <IFrame.hpp>
 
-class IRenderingMethod
-{
+class IRenderingMethod {
 public:
     virtual ~IRenderingMethod() = default;
     virtual void beginFrame() = 0;

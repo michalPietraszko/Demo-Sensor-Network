@@ -1,7 +1,3 @@
 #pragma once
 
-enum class InputResult
-{
-    none,
-    changeLayer
-};
+enum class InputResult { none, changeLayer };

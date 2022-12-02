@@ -1,7 +1,6 @@
 #pragma once
 
-struct AppLifetimeInfo
-{
+struct AppLifetimeInfo {
     bool isSensorNetworkSimulationRunning{false};
     bool isAppRunning{true};
 };

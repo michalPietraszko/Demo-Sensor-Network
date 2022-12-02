@@ -13,8 +13,7 @@
 
 class MainNodeCreatorScene;
 class SensorCreatorScene;
-class MainMenuSceneController : public ISceneController
-{
+class MainMenuSceneController : public ISceneController {
     // clang-format off
     using Model = MainMenuSceneModel;
     using View  = MainMenuSceneView;
@@ -31,15 +30,13 @@ public:
     MainMenuSceneController(Model& model, View& view) : ISceneController(model, view) {}
 
 protected:
-    void onCreateImpl() override
-    {
+    void onCreateImpl() override {
         ISceneController::onCreateImpl();
         setInputCallbacks();
         addNumOfSensorsToSensorStatus();
     }
 
-    InputResult onProcessInputImpl() override
-    {
+    InputResult onProcessInputImpl() override {
         inputProcessor.processAllInput();
         return getSceneLifetimeFromCurrentState();
     }
@@ -51,16 +48,14 @@ protected:
         updateBasedOnStartingState();
     }
 
-    void onDisplayImpl(Renderer& renderer) override
-    {
+    void onDisplayImpl(Renderer& renderer) override {
         ISceneController::onDisplayImpl(renderer);
         isNewestStateRendered = true;
     }
 
     void onTransition() override { lifetimeInfo.setSceneChangeFlag(); }
 
-    void onSceneUpdate() override
-    {
+    void onSceneUpdate() override {
         auto& node = getView().view.menu.at(SceneStates::createMainNode).status;
         getModel().m_CachedAppState.isMainNodeCreated ? node.setText(TextConstants::main_node_created)
                                                       : node.setText(TextConstants::main_node_not_created);
@@ -75,8 +70,7 @@ protected:
     bool shouldRenderNextFrame() const override { return not isNewestStateRendered; }
 
 private:
-    void setInputCallbacks()
-    {
+    void setInputCallbacks() {
         inputProcessor.add([this]() {
             auto in = getView().m_IO.userInput.popInput();
             if (not in) return;
@@ -96,7 +90,17 @@ private:
         //clang-format on
 
         inputParser.addCallback(
-            {SceneStates::start, SceneStates::systemReady}, {InputMatcherCreator::numberEqual(1)}, [this](const auto&) {
+            {SceneStates::start, SceneStates::systemReady}, 
+            {InputMatcherCreator::stringEqual("q")}, 
+            [this](const auto&) {
+                adapterCache->stopSystem();
+                return SceneStates::start;
+            });
+
+        inputParser.addCallback(
+            {SceneStates::start, SceneStates::systemReady}, 
+            {InputMatcherCreator::numberEqual(1)}, 
+            [this](const auto&) {
                 if (getModel().m_CachedAppState.isMainNodeCreated)
                 {
                     setLabelCallback(", Main node already created!");

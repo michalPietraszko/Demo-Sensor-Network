@@ -1,6 +1,5 @@
 #pragma once
 
-struct Config
-{
+struct Config {
     static constexpr auto appLoopPeriodMs = 10u;
 };

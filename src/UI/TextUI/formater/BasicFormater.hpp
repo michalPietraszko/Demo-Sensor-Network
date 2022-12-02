@@ -2,7 +2,6 @@
 #include <FormatGlyphs.hpp>
 #include <vector>
 
-struct BasicFormater
-{
+struct BasicFormater {
     const static std::vector<FormatGlyphs> any;
 };

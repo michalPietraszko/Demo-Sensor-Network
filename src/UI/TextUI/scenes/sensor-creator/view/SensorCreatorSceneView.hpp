@@ -6,8 +6,7 @@
 
 class SensorCreatorSceneController;
 
-class SensorCreatorSceneView : public ISceneView
-{
+class SensorCreatorSceneView : public ISceneView {
     struct TextConstants // clang-format off
     {
         constexpr static auto headline = "Create Sensor";
@@ -28,31 +27,23 @@ class SensorCreatorSceneView : public ISceneView
         constexpr static auto labelAccept      = "Accept settings? [y/n]";
     }; // clang-format on
 
-    enum class ViewElementId
-    {
-        sensorName,
-        interval,
-        startingValue
-    };
+    enum class ViewElementId { sensorName, interval, startingValue };
 
     friend class SensorCreatorSceneController;
     using SceneStates = SensorCreatorSceneModel::SceneStates;
     using MainView = MenuView<ViewElementId>;
 
-    void setInvariants() override
-    {
+    void setInvariants() override {
         view.menu.at(ViewElementId::sensorName).description.setText(TextConstants::sensorNameStr);
     }
 
-    void displayAll(Renderer& renderer) override
-    {
+    void displayAll(Renderer& renderer) override {
         view.display(renderer);
         m_IO.appStatus.display(renderer);
         m_IO.userInput.display(renderer);
     }
 
-    void onLoad() override
-    {
+    void onLoad() override {
         auto& label = m_IO.appStatus.get();
         label.resetTextCallback();
 
@@ -61,15 +52,9 @@ class SensorCreatorSceneView : public ISceneView
         label.setText(TextConstants::labelInterval);
     }
 
-    void addMenuPos(ViewElementId key)
-    {
-        view.menu.add(key, {});
-    }
+    void addMenuPos(ViewElementId key) { view.menu.add(key, {}); }
 
-    void removeMenuPos(ViewElementId key)
-    {
-        view.menu.remove(key);
-    }
+    void removeMenuPos(ViewElementId key) { view.menu.remove(key); }
 
     // clang-format off
     MainView view = {

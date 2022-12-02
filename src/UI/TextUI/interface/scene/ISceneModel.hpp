@@ -1,11 +1,10 @@
 #pragma once
 #include <UIAdapter.hpp>
 
-class ISceneModel
-{
+class ISceneModel {
 public:
     virtual ~ISceneModel() = default;
-    
+
     virtual void pullAppInfo(UIAdapter&) {}
     virtual bool wasModelUpdated() { return false; }
 };

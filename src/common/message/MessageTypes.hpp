@@ -1,7 +1,6 @@
 #pragma once
 
-enum class MessageType : unsigned
-{
+enum class MessageType : unsigned {
     Error = 0,
     SensorStatusReport,
     SensorReportReq,

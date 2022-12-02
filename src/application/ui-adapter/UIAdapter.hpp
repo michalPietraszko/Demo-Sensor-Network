@@ -3,8 +3,7 @@
 #include <string>
 
 class SensorNetworkApplication;
-class UIAdapter
-{
+class UIAdapter {
 public:
     UIAdapter(SensorNetworkApplication& app) : m_App{app} {}
 
